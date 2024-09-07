@@ -1,0 +1,26 @@
+- hosts:  ips-ec2
+  tasks:
+  - name: Install python3 on AL2023 using dnf  
+    become: yes
+    dnf:
+      name: python3
+      state: present
+  - name: Install virtualenv on AL2023 using dnf
+    become: yes
+    dnf:
+      name: python3-virtualenv
+      state: present
+  - name: Intalling pip dependencies (Django)
+    pip:
+      virtualenv: /home/ec2-user/pl/venv
+      name:
+        - django
+        - djangorestframework
+  - name: Create django project
+    shell: '. /home/ec2-user/pl/venv/bin/activate; django-admin startproject setup /home/ec2-user/pl/'
+  - name: Modify Django Hosts
+    lineinfile: 
+      path: /home/ec2-user/pl/setup/settings.py
+      regexp: 'ALLOWED_HOSTS'
+      line: "ALLOWED_HOSTS = ['*']"
+      backrefs: yes
